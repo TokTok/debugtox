@@ -1,0 +1,63 @@
+{
+  "app-id": "chat.tox.DebugTox",
+  "runtime": "org.kde.Platform",
+  "sdk": "org.kde.Sdk",
+  "runtime-version": "6.8",
+  "command": "debugtox",
+  "rename-icon": "debugtox",
+  "finish-args": [
+    "--share=network",
+    "--socket=pulseaudio",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--share=ipc",
+    "--talk-name=org.kde.StatusNotifierWatcher",
+    "--filesystem=xdg-desktop",
+    "--filesystem=xdg-documents",
+    "--filesystem=xdg-download",
+    "--filesystem=xdg-music",
+    "--filesystem=xdg-pictures",
+    "--filesystem=xdg-videos",
+    "--filesystem=/media",
+    "--device=all"
+  ],
+  "cleanup": ["/include", "/lib/pkgconfig", "/share/man", "*.la", "*.a"],
+  "modules": [
+    {
+      "name": "libsodium",
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/jedisct1/libsodium/releases/download/1.0.20-RELEASE/libsodium-1.0.20.tar.gz",
+          "sha256": "ebb65ef6ca439333c2bb41a0c1990587288da07f6c7fd07cb3a18cc18d30ce19"
+        }
+      ]
+    },
+    {
+      "name": "c-toxcore",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DDHT_BOOTSTRAP=OFF",
+        "-DBOOTSTRAP_DAEMON=OFF",
+        "-DENABLE_STATIC=OFF"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/TokTok/c-toxcore/releases/download/v0.2.20/c-toxcore-0.2.20.tar.gz",
+          "sha256": "a9c89a8daea745d53e5d78e7aacb99c7b4792c4400a5a69c71238f45d6164f4c"
+        }
+      ]
+    },
+    {
+      "name": "DebugTox",
+      "buildsystem": "cmake-ninja",
+      "sources": [
+        {
+          "type": "dir",
+          "path": "/qtox/"
+        }
+      ]
+    }
+  ]
+}

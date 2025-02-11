@@ -5,6 +5,7 @@
 #include "logger.h"
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QDateTime>
 #include <QDebug>
 
@@ -12,6 +13,12 @@ int main(int argc, char* argv[])
 {
     Logger::install();
     QApplication a(argc, argv);
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QStringLiteral("DebugTox"));
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.process(a);
 
     qDebug() << "Starting up...";
     DebugTox w;

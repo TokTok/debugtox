@@ -1,0 +1,5 @@
+# Non-Qt dependencies.
+opus
+sodium
+vpx
+toxcore
