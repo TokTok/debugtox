@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(debugtox VERSION 0.1 LANGUAGES CXX)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+project(
+  DebugTox
+  VERSION 0.0.1
+  LANGUAGES CXX)
+
+# Project name lowercase
+string(TOLOWER ${PROJECT_NAME} BINARY_NAME)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -162,38 +170,32 @@ set(PROJECT_SOURCES
     src/debugtox.ui
     src/logger.cpp
     src/logger.h
-    src/main.cpp
-)
+    src/main.cpp)
 
-qt_add_executable(debugtox
-    MANUAL_FINALIZATION
-    ${PROJECT_SOURCES}
-)
+if(COMMAND qt_policy)
+  # set QTP0002 policy: target properties that specify Android-specific paths
+  # may contain generator expressions
+  qt_policy(SET QTP0002 NEW)
+endif()
 
-target_link_libraries(debugtox PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+qt_add_executable(${BINARY_NAME} ${PROJECT_SOURCES})
+
+target_link_libraries(${BINARY_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 foreach(pkg in TOXCORE LIBSODIUM)
-    target_link_libraries(debugtox PRIVATE ${${pkg}_LIBRARIES})
-    target_link_directories(debugtox PRIVATE ${${pkg}_LIBRARY_DIRS})
-    target_include_directories(debugtox PRIVATE ${${pkg}_INCLUDE_DIRS})
-    target_compile_options(debugtox PRIVATE ${${pkg}_CFLAGS_OTHER})
+  target_link_libraries(${BINARY_NAME} PRIVATE ${${pkg}_LIBRARIES})
+  target_link_directories(${BINARY_NAME} PRIVATE ${${pkg}_LIBRARY_DIRS})
+  target_include_directories(${BINARY_NAME} PRIVATE ${${pkg}_INCLUDE_DIRS})
+  target_compile_options(${BINARY_NAME} PRIVATE ${${pkg}_CFLAGS_OTHER})
 endforeach()
 
-target_include_directories(debugtox PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(${BINARY_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-set_target_properties(debugtox PROPERTIES
-    ${BUNDLE_ID_OPTION}
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
-)
+set_target_properties(
+  ${BINARY_NAME}
+  PROPERTIES QT_ANDROID_TARGET_SDK_VERSION 34
+             QT_ANDROID_MIN_SDK_VERSION 24
+             QT_ANDROID_PACKAGE_SOURCE_DIR
+             "${CMAKE_CURRENT_SOURCE_DIR}/platform/android/${Qt6Core_VERSION}")
 
-include(GNUInstallDirs)
-install(TARGETS debugtox
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-qt_finalize_executable(debugtox)
+include(Installation)

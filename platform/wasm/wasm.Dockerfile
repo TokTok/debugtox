@@ -2,6 +2,7 @@ FROM toxchat/qtox:wasm-builder AS builder
 
 ENV PKG_CONFIG_PATH="/opt/buildhome/lib/pkgconfig"
 
+COPY cmake /qtox/cmake/
 COPY CMakeLists.txt /qtox/
 COPY src /qtox/src/
 RUN . "/opt/buildhome/emsdk/emsdk_env.sh" \

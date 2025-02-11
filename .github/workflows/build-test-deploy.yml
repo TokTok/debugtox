@@ -1,0 +1,75 @@
+name: Build, test, and deploy
+
+on:
+  # Run this workflow every day at 3:00 UTC to update caches.
+  schedule: [cron: '0 3 * * *']
+  # Allow manual trigger.
+  workflow_dispatch:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches: ["master"]
+    tags: ["v*"]
+
+# Cancel old PR builds when pushing new commits.
+concurrency:
+  group: build-test-deploy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  #############################################################
+  # Preparation jobs
+  #############################################################
+
+  prepare:
+    name: Prepare
+    uses: TokTok/ci-tools/.github/workflows/deploy-prepare.yml@refs/pull/92/merge
+
+  #############################################################
+  # Build, test, and deploy jobs (PR and push)
+  #############################################################
+
+  android:
+    name: Android
+    uses: TokTok/ci-tools/.github/workflows/deploy-android.yml@refs/pull/92/merge
+    needs: [prepare]
+    with:
+      project-name: DebugTox
+      production: true
+
+  appimage:
+    name: AppImage
+    uses: TokTok/ci-tools/.github/workflows/deploy-appimage.yml@refs/pull/92/merge
+    needs: [prepare]
+    with:
+      project-name: DebugTox
+      smoke-test: test/smoke-test.sh
+      test-files: test/smoke-test.sh
+
+  flatpak:
+    name: Flatpak
+    uses: TokTok/ci-tools/.github/workflows/deploy-flatpak.yml@refs/pull/92/merge
+    needs: [prepare]
+    with:
+      project-name: DebugTox
+      smoke-test: test/smoke-test.sh
+      test-files: test/smoke-test.sh
+
+  macos:
+    name: macOS
+    uses: TokTok/ci-tools/.github/workflows/deploy-macos.yml@refs/pull/92/merge
+    needs: [prepare]
+    with:
+      project-name: DebugTox
+      smoke-test: test/smoke-test.sh
+      test-files: test/smoke-test.sh
+
+  windows:
+    name: Windows
+    uses: TokTok/ci-tools/.github/workflows/deploy-windows.yml@refs/pull/92/merge
+    needs: [prepare]
+    with:
+      project-name: DebugTox
+      smoke-test: test/smoke-test.sh
+      test-files: test/smoke-test.sh

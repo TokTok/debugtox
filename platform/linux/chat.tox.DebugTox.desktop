@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=DebugTox
+GenericName=Tox debug client
+Comment=Debugging tool to experiment with the Tox API
+TryExec=debugtox
+Exec=debugtox %u
+Icon=debugtox
+Categories=Network;InstantMessaging;Chat;Telephony;VideoConference;
+Terminal=false
