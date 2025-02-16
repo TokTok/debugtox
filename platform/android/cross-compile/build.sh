@@ -2,7 +2,7 @@
 
 # Usage: ./build.sh --arch [armv7a|arm64-v8a|x86|x86_64] --build-type [Debug|Release]
 
-set -eu
+set -eux -o pipefail
 
 while (($# > 0)); do
   case $1 in
@@ -12,6 +12,14 @@ while (($# > 0)); do
       ;;
     --build-type)
       BUILD_TYPE="$2"
+      shift 2
+      ;;
+    --project-name)
+      PROJECT_NAME="$2"
+      shift 2
+      ;;
+    --qt-version)
+      QT_VERSION="$2"
       shift 2
       ;;
     --)
@@ -43,3 +51,12 @@ export QT_ANDROID_KEYSTORE_KEY_PASS=aoeuaoeu
   "$@"
 
 cmake --build _build --target apk
+
+if [ "$QT_VERSION" == "6.2.4" ]; then
+  built_apk="_build/android-build/build/outputs/apk/debug/android-build-debug.apk"
+else
+  ARTIFACT_TYPE="$(echo "$BUILD_TYPE" | tr '[:upper:]' '[:lower:]')"
+  built_apk="_build/android-build/build/outputs/apk/$ARTIFACT_TYPE/android-build-$ARTIFACT_TYPE-signed.apk"
+fi
+
+cp "$built_apk" "$PROJECT_NAME.apk"
