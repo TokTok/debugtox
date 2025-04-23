@@ -14,7 +14,8 @@ QString ByteArray::toString() const
         if (c.isPrint() || c.isSpace()) {
             result += c;
         } else {
-            result += QStringLiteral("\\x%1").arg(c.unicode(), 2, 16, QLatin1Char('0'));
+            result += QStringLiteral("\\x%1").arg(static_cast<quint16>(c.unicode()), 2, 16,
+                                                  QLatin1Char('0'));
         }
     }
     return result;
